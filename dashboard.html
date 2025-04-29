@@ -1,490 +1,526 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Dashboard Guru</title>
-    <style>
-        :root {
-            --primary-color: #2962FF;
-            --secondary-color: #0039CB;
-            --bg-gradient: linear-gradient(135deg, #74ebd5, #acb6e5);
-            --white: #ffffff;
-            --light-gray: #f4f7fa;
-            --dark-gray: #212121;
-            --shadow: 0 4px 8px rgba(0,0,0,0.2);
-            --border-radius: 12px;
-            --font-size-large: 1.5rem;
-            --font-size-extra-large: 2rem;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Dashboard Guru</title>
+  <style>
+    :root {
+      --primary-color: #2962FF;
+      --secondary-color: #0039CB;
+      --bg-gradient: linear-gradient(135deg, #74ebd5, #acb6e5);
+      --white: #ffffff;
+      --light-gray: #f4f7fa;
+      --dark-gray: #212121;
+      --shadow: 0 4px 8px rgba(0,0,0,0.2);
+      --border-radius: 12px;
+      --font-size-large: 1.5rem;
+      --font-size-extra-large: 2rem;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        body { 
-            font-family: 'Arial', sans-serif;
-            font-size: 20px;
-            background: var(--bg-gradient);
-            min-height: 100vh;
-            line-height: 1.6;
-            color: var(--dark-gray);
-        }
+    body {
+      font-family: 'Arial', sans-serif;
+      font-size: 20px;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      color: var(--dark-gray);
+      line-height: 1.6;
+    }
 
-        /* Navbar Styles */
-        .navbar {
-            display: flex;
-            flex-direction: column;
-            background: var(--white);
-            padding: 15px 20px;
-            box-shadow: var(--shadow);
-        }
+    .navbar {
+      display: flex;
+      flex-direction: column;
+      background: var(--white);
+      padding: 15px 20px;
+      box-shadow: var(--shadow);
+    }
 
-        .nav-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
+    .nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        .nav-links {
-            display: none;
-            flex-direction: column;
-            gap: 15px;
-            padding: 15px 0;
-        }
+    .nav-links {
+      display: none;
+      flex-direction: column;
+      gap: 15px;
+      padding: 15px 0;
+    }
 
-        .nav-links.active {
-            display: flex;
-        }
+    .nav-links.active {
+      display: flex;
+    }
 
-        .nav-links a {
-            text-decoration: none;
-            color: var(--dark-gray);
-            font-weight: bold;
-            font-size: var(--font-size-large);
-            padding: 12px 16px;
-            border-radius: var(--border-radius);
-            transition: background 0.3s;
-            background-color: #E3F2FD;
-        }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--dark-gray);
+      font-weight: bold;
+      font-size: var(--font-size-large);
+      padding: 12px 16px;
+      border-radius: var(--border-radius);
+      transition: background 0.3s;
+      background-color: #E3F2FD;
+    }
 
-        .nav-links a:hover {
-            background-color: #BBDEFB;
-        }
+    .nav-links a:hover {
+      background-color: #BBDEFB;
+    }
 
-        .hamburger {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            width: 36px;
-            height: 30px;
-            cursor: pointer;
-        }
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 36px;
+      height: 30px;
+      cursor: pointer;
+    }
 
-        .hamburger span {
-            display: block;
-            width: 100%;
-            height: 4px;
-            background-color: var(--dark-gray);
-            transition: all 0.3s;
-        }
+    .hamburger span {
+      display: block;
+      width: 100%;
+      height: 4px;
+      background-color: var(--dark-gray);
+      transition: all 0.3s;
+    }
 
-        .hamburger.active span:nth-child(1) {
-            transform: translateY(12px) rotate(45deg);
-        }
+    .hamburger.active span:nth-child(1) {
+      transform: translateY(12px) rotate(45deg);
+    }
 
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
 
-        .hamburger.active span:nth-child(3) {
-            transform: translateY(-12px) rotate(-45deg);
-        }
+    .hamburger.active span:nth-child(3) {
+      transform: translateY(-12px) rotate(-45deg);
+    }
 
-        .profile {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
+    .profile {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
 
-        .profile img {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 3px solid var(--primary-color);
-        }
+    .profile img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid var(--primary-color);
+    }
 
-        .profile-info {
-            text-align: right;
-        }
+    .profile-info {
+      text-align: right;
+    }
 
-        .profile-info p {
-            margin: 0;
-            font-size: var(--font-size-large);
-            color: var(--dark-gray);
-            font-weight: bold;
-        }
+    .profile-info p {
+      margin: 0;
+      font-size: var(--font-size-large);
+      font-weight: bold;
+    }
 
-        .dropdown {
-            display: none;
-            position: absolute;
-            top: 80px;
-            right: 0;
-            background-color: var(--white);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            z-index: 1000;
-            width: 220px;
-        }
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: 80px;
+      right: 0;
+      background-color: var(--white);
+      box-shadow: var(--shadow);
+      border-radius: var(--border-radius);
+      width: 220px;
+      overflow: hidden;
+      z-index: 1000;
+    }
 
-        .dropdown button {
-            background: none;
-            border: none;
-            padding: 16px;
-            width: 100%;
-            text-align: left;
-            cursor: pointer;
-            font-size: var(--font-size-large);
-            color: var(--dark-gray);
-        }
+    .dropdown button {
+      background: none;
+      border: none;
+      padding: 16px;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      font-size: var(--font-size-large);
+      color: var(--dark-gray);
+    }
 
-        .dropdown button:hover {
-            background-color: #E3F2FD;
-        }
+    .dropdown button:hover {
+      background-color: #E3F2FD;
+    }
 
-        /* Container Styles */
-        .container {
-            background: var(--white);
-            padding: 30px;
-            margin: 30px auto;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            text-align: center;
-            width: 95%;
-            max-width: 600px;
-            animation: fadeIn 1s ease-in-out;
-        }
+    .container {
+      background: var(--white);
+      padding: 30px;
+      margin: 30px auto;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      text-align: center;
+      width: 95%;
+      max-width: 600px;
+      animation: fadeIn 1s ease-in-out;
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px);}
-            to { opacity: 1; transform: translateY(0);}
-        }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
 
-        h2 { 
-            color: var(--dark-gray); 
-            font-size: var(--font-size-extra-large);
-            margin-bottom: 30px;
-            font-weight: bold;
-        }
+    h2 {
+      font-size: var(--font-size-extra-large);
+      color: var(--dark-gray);
+      margin-bottom: 30px;
+      font-weight: bold;
+    }
 
-        /* Modal Styles */
-        .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 999; 
-            left: 0;
-            top: 0;
-            width: 100%; 
-            height: 100%; 
-            overflow: auto; 
-            background-color: rgba(0,0,0,0.5);
-        }
+    .dashboard-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+      justify-items: center;
+    }
 
-        .modal-content {
-            background-color: var(--white);
-            margin: 10% auto;
-            padding: 30px;
-            border-radius: var(--border-radius);
-            width: 95%;
-            max-width: 500px;
-            box-shadow: var(--shadow);
-        }
+    .dashboard-item {
+      text-align: center;
+    }
 
-        .modal-content h3 {
-            font-size: var(--font-size-extra-large);
-            margin-bottom: 20px;
-            color: var(--primary-color);
-        }
+    .dashboard-item img {
+      width: 100%;
+      max-width: 180px;
+      height: auto;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
 
-        .modal-content input {
-            width: 100%;
-            padding: 15px;
-            margin: 15px 0;
-            box-sizing: border-box;
-            border: 2px solid #BBDEFB;
-            border-radius: 8px;
-            font-size: var(--font-size-large);
-        }
+    .dashboard-item p {
+      margin-top: 12px;
+      font-size: 1.2rem;
+    }
 
-        .modal-content button {
-            padding: 15px 25px;
-            margin: 10px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: var(--font-size-large);
-            transition: background 0.3s;
-        }
+    .dashboard-item button {
+      margin-top: 8px;
+      background: none;
+      border: none;
+      color: #007BFF;
+      font-size: 1rem;
+      text-decoration: underline;
+      cursor: pointer;
+    }
 
-        /* Image Upload Styles */
-        .image-preview {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin: 20px auto;
-            display: block;
-            border: 4px solid var(--primary-color);
-        }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+    }
 
-        .file-input-container {
-            text-align: center;
-            margin: 25px 0;
-        }
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: var(--border-radius);
+      text-align: center;
+      max-width: 600px;
+      width: 90%;
+    }
 
-        .file-input-label {
-            background-color: var(--primary-color);
-            color: var(--white);
-            padding: 15px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: inline-block;
-            transition: background 0.3s;
-            font-size: var(--font-size-large);
-            font-weight: bold;
-        }
+    .modal-content img {
+      width: 100%;
+      height: auto;
+      border-radius: var(--border-radius);
+    }
 
-        .file-input-label:hover {
-            background-color: var(--secondary-color);
-        }
+    .close-btn {
+      margin-top: 15px;
+      padding: 8px 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-        #file-input {
-            display: none;
-        }
+    .image-preview {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin: 20px auto;
+      display: block;
+      border: 4px solid var(--primary-color);
+    }
 
-        /* Button Styles */
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
+    .file-input-container {
+      text-align: center;
+      margin: 25px 0;
+    }
 
-        .btn-secondary {
-            background-color: #757575;
-            color: white;
-        }
+    .file-input-label {
+      background-color: var(--primary-color);
+      color: var(--white);
+      padding: 15px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: var(--font-size-large);
+      font-weight: bold;
+      display: inline-block;
+    }
 
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
-        }
+    .file-input-label:hover {
+      background-color: var(--secondary-color);
+    }
 
-        .btn-secondary:hover {
-            background-color: #616161;
-        }
+    #file-input {
+      display: none;
+    }
 
-        /* Responsive Styles */
-        @media (min-width: 768px) {
-            .navbar {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin: 5px;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
 
-            .nav-links {
-                display: flex;
-                flex-direction: row;
-                padding: 0;
-                gap: 20px;
-            }
+    .btn-primary:hover {
+      background-color: var(--secondary-color);
+    }
 
-            .hamburger {
-                display: none;
-            }
+    .btn-secondary {
+      background-color: #757575;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin: 5px;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
 
-            .profile {
-                margin-top: 0;
-                order: 2;
-            }
-
-            .container {
-                padding: 40px;
-                margin: 50px auto;
-            }
-
-            h2 {
-                font-size: 2.5rem;
-            }
-        }
-    </style>
+    .btn-secondary:hover {
+      background-color: #616161;
+    }
+  </style>
 </head>
 <body onload="loadProfile(); checkLogin();">
 
-    <div class="navbar">
-        <div class="nav-header">
-            <div class="hamburger" onclick="toggleMenu()">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div class="nav-links">
-                <a href="absen.html">Absen</a>
-                <a href="lihat_absen.html">Lihat Absen</a>
-            </div>
-            <div class="profile" onclick="toggleDropdown(event)">
-                <img id="profile-pic" src="Logo.jpg" alt="Foto Guru">
-                <div class="profile-info">
-                    <p id="profile-name">Nama Guru</p>
-                    <p id="profile-class">Kelas: 1</p>
-                </div>
-                <div id="dropdownMenu" class="dropdown">
-                    <button onclick="openModal()">Edit Profil</button>
-                    <button onclick="logout()">Logout</button>
-                </div>
-            </div>
-        </div>
+<!-- Navbar -->
+<div class="navbar">
+  <div class="nav-header">
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
     </div>
-
-    <div class="container">
-        <h2>Selamat datang di Dashboard</h2>
-        <p style="font-size: 1.5rem; margin-top: 20px;">Silakan pilih menu di atas untuk mulai menggunakan aplikasi</p>
+    <div class="nav-links">
+      <a href="absen.html">Absen</a>
+      <a href="lihat_absen.html">Lihat Absen</a>
     </div>
-
-    <!-- Modal -->
-    <div id="profileModal" class="modal">
-        <div class="modal-content">
-            <h3>Edit Profil</h3>
-            
-            <img id="image-preview" class="image-preview" src="" alt="Preview Foto Profil">
-            
-            <div class="file-input-container">
-                <label for="file-input" class="file-input-label">Pilih Foto</label>
-                <input type="file" id="file-input" accept="image/*">
-            </div>
-            
-            <input type="text" id="edit-name" placeholder="Nama Baru">
-            <input type="text" id="edit-class" placeholder="Kelas Baru">
-            <button class="btn-primary" onclick="saveProfile()">Simpan</button>
-            <button class="btn-secondary" onclick="closeModal()">Batal</button>
-        </div>
+    <div class="profile" onclick="toggleDropdown(event)">
+      <img id="profile-pic" src="Logo.jpg" alt="Foto Guru">
+      <div class="profile-info">
+        <p id="profile-name">Nama Guru</p>
+        <p id="profile-class">Kelas: 1</p>
+      </div>
+      <div id="dropdownMenu" class="dropdown">
+        <button onclick="openProfileModal()">Edit Profil</button>
+        <button onclick="logout()">Logout</button>
+      </div>
     </div>
+  </div>
+</div>
 
-    <script>
-        let selectedFile = null;
-        
-        function logout() {
-            localStorage.removeItem("loggedIn");
-            window.location.href = "index.html";
-        }
+<!-- Profile Modal -->
+<div id="profileModal" class="modal">
+  <div class="modal-content">
+    <h2>Edit Profil</h2>
+    <form onsubmit="saveProfile(); return false;">
+      <img id="image-preview" class="image-preview" src="Logo.jpg" alt="Profile Picture">
+      <div class="file-input-container">
+        <label for="file-input" class="file-input-label">Ubah Foto</label>
+        <input type="file" id="file-input" onchange="previewImage(event)">
+      </div>
+      <div>
+        <input type="text" id="edit-name" placeholder="Nama" required>
+      </div>
+      <div>
+        <input type="text" id="edit-class" placeholder="Kelas" required>
+      </div>
+      <button type="submit" class="btn-primary">Simpan Profil</button>
+      <button type="button" class="btn-secondary" onclick="closeModal()">Tutup</button>
+    </form>
+  </div>
+</div>
 
-        function checkLogin() {
-            if (localStorage.getItem("loggedIn") !== "true") {
-                alert("Silakan login terlebih dahulu!");
-                window.location.href = "index.html";
-            }
-        }
+<!-- Main Content -->
+<div class="container">
+  <h2>Selamat datang di Dashboard Guru</h2>
+  <div class="dashboard-gallery">
+    <div class="dashboard-item">
+      <img src="Gambar1.jpg" alt="logo">
+      <p>Pada Gambar Ini memiliki 3 fungsi <br>di atas yaitu</p>
+      <p>1. Profil</p>
+      <p>2. Absen</p>
+      <p>3. Lihat Absen</p>
+      <button onclick="openImageModal('Gambar1.jpg')">Lihat</button>
+    </div>
+    <div class="dashboard-item">
+        <img src="Gambar5.jpg" alt="logo">
+        <p>Ketika User ingin mengubah profile maka ada tampilan</p>
+        <p>1. Ubah Foto</p>
+        <p>2. Nama Guru</p>
+        <p>3. Kelas yang di ajar</p>
+        <p>4. Simpan Profil jika sudah selesai mengubah</p>
+        <p>5. Tutup jika user ingin kembali ke bagian dashboard</p>
+        <button onclick="openImageModal('Gambar5.jpg')">Lihat</button>
+      </div><br>
+    <div class="dashboard-item">
+      <img src="Gambar2.jpg" alt="logo">
+      <p>Ketika User Memilih Tombol Absen di atas maka akan tampil</p>
+      <p>1. Tanggal Absen</p>
+      <p>2. Pilihan Mata Pelajaran</p>
+      <p>3. Hadir semua (Yang berfungsi untuk mengabsen seluruh siswa dengan predikat hadir)</p>
+      <p>4. Ketika User memilih tidak hadir maka akan ada 3 pilihan alasan</p>
+      <p>Sakit, Izin, dan Alfa</p>
+      <button onclick="openImageModal('Gambar2.jpg')">Lihat</button>
+    </div><br>
+    <div class="dashboard-item">
+      <img src="Gambar3.jpg" alt="logo">
+      <p>Ketika user telah megisi absen dari tanggal, mata pelajaran, dan hadir/tidak hadir.</p>
+      <p>Maka akan ada 2 Tombol yaitu</p>
+      <p>1. Simpan Absensi (Untuk menyimpan data yang sudah di input)</p>
+      <p>2. kembali ke dashboard (Untuk kembali lagi ke halaman utama website)</p>
+      <button onclick="openImageModal('Gambar3.jpg')">Lihat</button>
+    </div><br>
+    <div class="dashboard-item">
+        <img src="Gambar4.jpg" alt="logo">
+        <p>Ketika user memilih tombol lihat absen maka akan tampilan </p>
+        <p>1. Tanggal (Tanggal user menyimpan data)</p>
+        <p>2. Pelajaran (Mata Pelajaran yang sudah di input oleh user)</p>
+        <p>3. Jumlah hadir/tidak hadir (menampilkan jumlah angka siswa yang hadir dan tidak hadir)</p>
+        <p>4. Tombol hapus (Untuk menghapus data yang telah di simpan)</p>
+        <p>5. Tombol Ubah (Untuk Mengubah data yang disimpan jika ada kesalahan saat mengisi)</p>
+        <p>6. Download Absensi (User dapat mendownload data yang telah di simpan untuk dilihat)</p>
+        <p>7. Kembali ke dashboard (Untuk kembali lagi ke halaman utama website)</p>
+        <button onclick="openImageModal('Gambar4.jpg')">Lihat</button>
+      </div>
+  </div>
+</div>
 
-        function toggleMenu() {
-            const navLinks = document.querySelector('.nav-links');
-            const hamburger = document.querySelector('.hamburger');
-            navLinks.classList.toggle('active');
-            hamburger.classList.toggle('active');
-        }
+<!-- Modal Image Preview -->
+<div id="myModal" class="modal" onclick="closeModal()">
+  <div class="modal-content">
+    <img id="modalImage" src="" alt="Preview Image">
+    <button class="close-btn" onclick="closeModal()">Tutup</button>
+  </div>
+</div>
 
-        function openModal() {
-            document.getElementById("profileModal").style.display = "block";
-            closeDropdown();
-            selectedFile = null;
-            document.getElementById("file-input").value = "";
-            // Load current image to preview
-            document.getElementById("image-preview").src = 
-                localStorage.getItem("profilePhoto") || document.getElementById("profile-pic").src;
-        }
+<script>
+  // Menampilkan profil dari localStorage
+  function loadProfile() {
+    const profileData = JSON.parse(localStorage.getItem('profile'));
+    if (profileData) {
+      document.getElementById('profile-pic').src = profileData.photo || 'Logo.jpg';
+      document.getElementById('profile-name').textContent = profileData.name || 'Nama Guru';
+      document.getElementById('profile-class').textContent = 'Kelas: ' + (profileData.class || '1');
+    }
+  }
 
-        function closeModal() {
-            document.getElementById("profileModal").style.display = "none";
-        }
+  // Menyimpan profil ke localStorage
+  function saveProfile() {
+    const name = document.getElementById('edit-name').value;
+    const className = document.getElementById('edit-class').value;
+    const fileInput = document.getElementById('file-input');
+    const photo = fileInput.files[0] ? URL.createObjectURL(fileInput.files[0]) : 'Logo.jpg';
+    
+    const profileData = {
+      name: name,
+      class: className,
+      photo: photo
+    };
+    localStorage.setItem('profile', JSON.stringify(profileData));
+    
+    loadProfile();
+    closeModal();
+  }
 
-        function saveProfile() {
-            var name = document.getElementById("edit-name").value;
-            var classInfo = document.getElementById("edit-class").value;
+  // Fungsi modal
+  function openModal() {
+    document.getElementById('myModal').style.display = 'flex';
+  }
 
-            if (!name || !classInfo) {
-                alert("Harap isi nama dan kelas!");
-                return;
-            }
+  function closeModal() {
+    document.getElementById('myModal').style.display = 'none';
+    document.getElementById('profileModal').style.display = 'none';
+  }
 
-            localStorage.setItem("profileName", name);
-            localStorage.setItem("profileClass", classInfo);
-            
-            if (selectedFile) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    localStorage.setItem("profilePhoto", e.target.result);
-                    loadProfile();
-                }
-                reader.readAsDataURL(selectedFile);
-            } else {
-                loadProfile();
-            }
-            
-            closeModal();
-            alert("Profil berhasil diperbarui!");
-        }
+  // Menampilkan gambar modal
+  function openImageModal(src) {
+    document.getElementById('modalImage').src = src;
+    openModal();
+  }
 
-        function loadProfile() {
-            var name = localStorage.getItem("profileName") || "Nama Guru";
-            var classInfo = localStorage.getItem("profileClass") || "Kelas: 1";
-            var photo = localStorage.getItem("profilePhoto") || "Logo.jpg";
+  // Menampilkan profil modal
+  function openProfileModal() {
+    const profileData = JSON.parse(localStorage.getItem('profile'));
+    if (profileData) {
+      document.getElementById('edit-name').value = profileData.name || '';
+      document.getElementById('edit-class').value = profileData.class || '';
+    }
+    document.getElementById('profileModal').style.display = 'flex';
+  }
 
-            document.getElementById("profile-name").innerText = name;
-            document.getElementById("profile-class").innerText = "Kelas: " + classInfo;
-            document.getElementById("profile-pic").src = photo;
-        }
+  // Menutup dropdown menu
+  function toggleDropdown(event) {
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    dropdownMenu.style.display = dropdownMenu.style.display === 'none' || dropdownMenu.style.display === '' ? 'block' : 'none';
+    event.stopPropagation();
+  }
 
-        function toggleDropdown(event) {
-            event.stopPropagation();
-            var dropdown = document.getElementById("dropdownMenu");
-            dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
-            
-            // Close menu if open
-            const navLinks = document.querySelector('.nav-links');
-            const hamburger = document.querySelector('.hamburger');
-            if (navLinks.classList.contains('active')) {
-                navLinks.classList.remove('active');
-                hamburger.classList.remove('active');
-            }
-        }
+  // Mengubah gambar profil
+  function previewImage(event) {
+    const preview = document.getElementById('image-preview');
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function() {
+      preview.src = reader.result;
+    };
+    
+    reader.readAsDataURL(file);
+  }
 
-        function closeDropdown() {
-            document.getElementById("dropdownMenu").style.display = "none";
-        }
+  // Toggle navbar
+  function toggleMenu() {
+    const navLinks = document.querySelector('.nav-links');
+    navLinks.classList.toggle('active');
+    const hamburger = document.querySelector('.hamburger');
+    hamburger.classList.toggle('active');
+  }
 
-        // File input handler
-        document.getElementById('file-input').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                // Validate file size (max 3MB)
-                if (file.size > 3 * 1024 * 1024) {
-                    alert('Ukuran gambar terlalu besar. Maksimal 3MB.');
-                    return;
-                }
-
-                selectedFile = file;
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById("image-preview").src = e.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-    </script>
+  // Logout
+  function logout() {
+    localStorage.removeItem('profile');
+    alert('Anda telah logout.');
+    window.location.reload();
+  }
+</script>
 </body>
 </html>
