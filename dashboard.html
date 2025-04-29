@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Dashboard Guru</title>
+    <style>
+        :root {
+            --primary-color: #2962FF;
+            --secondary-color: #0039CB;
+            --bg-gradient: linear-gradient(135deg, #74ebd5, #acb6e5);
+            --white: #ffffff;
+            --light-gray: #f4f7fa;
+            --dark-gray: #212121;
+            --shadow: 0 4px 8px rgba(0,0,0,0.2);
+            --border-radius: 12px;
+            --font-size-large: 1.5rem;
+            --font-size-extra-large: 2rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body { 
+            font-family: 'Arial', sans-serif;
+            font-size: 20px;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            line-height: 1.6;
+            color: var(--dark-gray);
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            display: flex;
+            flex-direction: column;
+            background: var(--white);
+            padding: 15px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .nav-links {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px 0;
+        }
+
+        .nav-links.active {
+            display: flex;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-gray);
+            font-weight: bold;
+            font-size: var(--font-size-large);
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            transition: background 0.3s;
+            background-color: #E3F2FD;
+        }
+
+        .nav-links a:hover {
+            background-color: #BBDEFB;
+        }
+
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 36px;
+            height: 30px;
+            cursor: pointer;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 100%;
+            height: 4px;
+            background-color: var(--dark-gray);
+            transition: all 0.3s;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(12px) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-12px) rotate(-45deg);
+        }
+
+        .profile {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .profile img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid var(--primary-color);
+        }
+
+        .profile-info {
+            text-align: right;
+        }
+
+        .profile-info p {
+            margin: 0;
+            font-size: var(--font-size-large);
+            color: var(--dark-gray);
+            font-weight: bold;
+        }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 80px;
+            right: 0;
+            background-color: var(--white);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            z-index: 1000;
+            width: 220px;
+        }
+
+        .dropdown button {
+            background: none;
+            border: none;
+            padding: 16px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: var(--font-size-large);
+            color: var(--dark-gray);
+        }
+
+        .dropdown button:hover {
+            background-color: #E3F2FD;
+        }
+
+        /* Container Styles */
+        .container {
+            background: var(--white);
+            padding: 30px;
+            margin: 30px auto;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            width: 95%;
+            max-width: 600px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        h2 { 
+            color: var(--dark-gray); 
+            font-size: var(--font-size-extra-large);
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 999; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 95%;
+            max-width: 500px;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-content h3 {
+            font-size: var(--font-size-extra-large);
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            box-sizing: border-box;
+            border: 2px solid #BBDEFB;
+            border-radius: 8px;
+            font-size: var(--font-size-large);
+        }
+
+        .modal-content button {
+            padding: 15px 25px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: var(--font-size-large);
+            transition: background 0.3s;
+        }
+
+        /* Image Upload Styles */
+        .image-preview {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin: 20px auto;
+            display: block;
+            border: 4px solid var(--primary-color);
+        }
+
+        .file-input-container {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .file-input-label {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-block;
+            transition: background 0.3s;
+            font-size: var(--font-size-large);
+            font-weight: bold;
+        }
+
+        .file-input-label:hover {
+            background-color: var(--secondary-color);
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #757575;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #616161;
+        }
+
+        /* Responsive Styles */
+        @media (min-width: 768px) {
+            .navbar {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .nav-links {
+                display: flex;
+                flex-direction: row;
+                padding: 0;
+                gap: 20px;
+            }
+
+            .hamburger {
+                display: none;
+            }
+
+            .profile {
+                margin-top: 0;
+                order: 2;
+            }
+
+            .container {
+                padding: 40px;
+                margin: 50px auto;
+            }
+
+            h2 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body onload="loadProfile(); checkLogin();">
+
+    <div class="navbar">
+        <div class="nav-header">
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-links">
+                <a href="absen.html">Absen</a>
+                <a href="lihat_absen.html">Lihat Absen</a>
+            </div>
+            <div class="profile" onclick="toggleDropdown(event)">
+                <img id="profile-pic" src="Logo.jpg" alt="Foto Guru">
+                <div class="profile-info">
+                    <p id="profile-name">Nama Guru</p>
+                    <p id="profile-class">Kelas: 1</p>
+                </div>
+                <div id="dropdownMenu" class="dropdown">
+                    <button onclick="openModal()">Edit Profil</button>
+                    <button onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Selamat datang di Dashboard</h2>
+        <p style="font-size: 1.5rem; margin-top: 20px;">Silakan pilih menu di atas untuk mulai menggunakan aplikasi</p>
+    </div>
+
+    <!-- Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Profil</h3>
+            
+            <img id="image-preview" class="image-preview" src="" alt="Preview Foto Profil">
+            
+            <div class="file-input-container">
+                <label for="file-input" class="file-input-label">Pilih Foto</label>
+                <input type="file" id="file-input" accept="image/*">
+            </div>
+            
+            <input type="text" id="edit-name" placeholder="Nama Baru">
+            <input type="text" id="edit-class" placeholder="Kelas Baru">
+            <button class="btn-primary" onclick="saveProfile()">Simpan</button>
+            <button class="btn-secondary" onclick="closeModal()">Batal</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedFile = null;
+        
+        function logout() {
+            localStorage.removeItem("loggedIn");
+            window.location.href = "index.html";
+        }
+
+        function checkLogin() {
+            if (localStorage.getItem("loggedIn") !== "true") {
+                alert("Silakan login terlebih dahulu!");
+                window.location.href = "index.html";
+            }
+        }
+
+        function toggleMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            const hamburger = document.querySelector('.hamburger');
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+
+        function openModal() {
+            document.getElementById("profileModal").style.display = "block";
+            closeDropdown();
+            selectedFile = null;
+            document.getElementById("file-input").value = "";
+            // Load current image to preview
+            document.getElementById("image-preview").src = 
+                localStorage.getItem("profilePhoto") || document.getElementById("profile-pic").src;
+        }
+
+        function closeModal() {
+            document.getElementById("profileModal").style.display = "none";
+        }
+
+        function saveProfile() {
+            var name = document.getElementById("edit-name").value;
+            var classInfo = document.getElementById("edit-class").value;
+
+            if (!name || !classInfo) {
+                alert("Harap isi nama dan kelas!");
+                return;
+            }
+
+            localStorage.setItem("profileName", name);
+            localStorage.setItem("profileClass", classInfo);
+            
+            if (selectedFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    localStorage.setItem("profilePhoto", e.target.result);
+                    loadProfile();
+                }
+                reader.readAsDataURL(selectedFile);
+            } else {
+                loadProfile();
+            }
+            
+            closeModal();
+            alert("Profil berhasil diperbarui!");
+        }
+
+        function loadProfile() {
+            var name = localStorage.getItem("profileName") || "Nama Guru";
+            var classInfo = localStorage.getItem("profileClass") || "Kelas: 1";
+            var photo = localStorage.getItem("profilePhoto") || "Logo.jpg";
+
+            document.getElementById("profile-name").innerText = name;
+            document.getElementById("profile-class").innerText = "Kelas: " + classInfo;
+            document.getElementById("profile-pic").src = photo;
+        }
+
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            var dropdown = document.getElementById("dropdownMenu");
+            dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
+            
+            // Close menu if open
+            const navLinks = document.querySelector('.nav-links');
+            const hamburger = document.querySelector('.hamburger');
+            if (navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+                hamburger.classList.remove('active');
+            }
+        }
+
+        function closeDropdown() {
+            document.getElementById("dropdownMenu").style.display = "none";
+        }
+
+        // File input handler
+        document.getElementById('file-input').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Validate file size (max 3MB)
+                if (file.size > 3 * 1024 * 1024) {
+                    alert('Ukuran gambar terlalu besar. Maksimal 3MB.');
+                    return;
+                }
+
+                selectedFile = file;
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("image-preview").src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>

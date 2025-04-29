@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Form Absen Otomatis</title>
+  <style>
+    /* Sama seperti gaya CSS sebelumnya */
+    :root {
+      --primary-color: #2E7D32;
+      --secondary-color: #1B5E20;
+      --danger-color: #C62828;
+      --gray-color: #757575;
+      --light-gray: #f4f7fa;
+      --border-radius: 10px;
+      --font-large: 1.2rem;
+      --font-xlarge: 1.5rem;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f4f7fa;
+      min-height: 100vh;
+      padding: 20px;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .form-container {
+      background: white;
+      padding: 25px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: var(--font-xlarge);
+      color: #333;
+    }
+
+    input[type="date"], 
+    select, 
+    button {
+      padding: 15px;
+      margin: 12px 0;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: var(--border-radius);
+      border: 2px solid #ddd;
+      font-size: var(--font-large);
+    }
+
+    input[type="date"]:focus,
+    select:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 25px 0;
+      font-size: var(--font-large);
+    }
+
+    th, td {
+      padding: 15px 10px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+      font-size: var(--font-large);
+    }
+
+    button:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .btn-group button {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .btn-danger {
+      background-color: var(--danger-color);
+    }
+
+    .btn-danger:hover {
+      background-color: #B71C1C;
+    }
+
+    .btn-secondary {
+      background-color: var(--gray-color);
+    }
+
+    .btn-secondary:hover {
+      background-color: #616161;
+    }
+
+    input[type="radio"] {
+      transform: scale(1.8);
+      margin: 0 10px;
+      accent-color: var(--primary-color);
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+        font-size: 16px;
+      }
+
+      .form-container {
+        padding: 15px;
+      }
+
+      h2 {
+        font-size: var(--font-large);
+        margin-bottom: 15px;
+      }
+
+      table {
+        font-size: 16px;
+      }
+
+      th, td {
+        padding: 12px 5px;
+      }
+
+      input[type="radio"] {
+        transform: scale(1.5);
+        margin: 0 5px;
+      }
+
+      .btn-group {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .btn-group button {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      input[type="date"],
+      select,
+      button {
+        padding: 12px;
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <h2>Form Absen Siswa</h2>
+    <form id="absenForm">
+      <input type="date" id="tanggal" required>
+      <select id="pelajaran" required>
+        <option value="">Pilih Mata Pelajaran</option>
+      </select>
+
+      <div class="btn-group">
+        <button type="button" onclick="hadirSemua()">Hadir Semua</button>
+        <button type="button" onclick="tidakHadirSemua()">Tidak Hadir Semua</button>
+        <button type="button" class="btn-secondary" onclick="resetSemua()">Reset Semua</button>
+      </div>
+
+      <table id="siswaTable">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama Siswa</th>
+            <th>NIS</th>
+            <th>Hadir</th>
+            <th>Tidak Hadir</th>
+            <th>Alasan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Data siswa nanti disini -->
+        </tbody>
+      </table>
+
+      <div class="btn-group">
+        <button type="button" onclick="simpanAbsensi()">Simpan Absensi</button>
+        <button type="button" class="btn-secondary" onclick="window.location.href='lihat_absen.html'">Kembali Lihat Absen</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Data pelajaran
+const pelajaranList = [
+"Matematika",
+"Pendidikan Agama dan Budi Pekerti",
+"Pendidikan Pancasila",
+"Bahasa Indonesia",
+"Ilmu Pengetahuan Alam dan Sosial",
+"Pendidikan Jasmani, Olahraga dan Kesehatan (PJOK)",
+"Seni dan Budaya",
+"Projek Penguatan Profil Pelajar Pancasila",
+"Bahasa Sunda",
+];
+
+// Data siswa (40 orang)
+const siswaData = [
+{ nama: "Adeeva Afshan Myesha", nis: "232401001" },
+{ nama: "Adelia Nazwa Orlin", nis: "232401002" },
+{ nama: "Adellia Rahmadhani", nis: "232401003" },
+{ nama: "Alby Zikri Putra Zaelani", nis: "232401004" },
+{ nama: "Alika Meisa Gabriela", nis: "232401005" },
+{ nama: "Almeera Izhar Mauza", nis: "232401006" },
+{ nama: "Amanda Ramadhani", nis: "232401027" },
+{ nama: "Amira Ainun Mahya", nis: "232401007" },
+{ nama: "Ananda Muhammad Yusuf", nis: "232401008" },
+{ nama: "Ashila Alfahreza", nis: "232401009" },
+{ nama: "Az Zahra Rizkyyani Saputri", nis: "232401010" },
+{ nama: "Azkha Ramadhan Hardiansyah", nis: "232401011" },
+{ nama: "Bilqis Nafisa Azura", nis: "232401012" },
+{ nama: "Dias Nafis Alfaridzy Akhmad", nis: "232401013" },
+{ nama: "Elvina Kirana Maulica", nis: "232401014" },
+{ nama: "Hasbi Rahmdan Solihin", nis: "232401015" },
+{ nama: "Iqbal Gunawan", nis: "232401016" },
+{ nama: "Kanaya Elsabila Putri", nis: "232401017" },
+{ nama: "Kayla Putri Suhendar", nis: "232401018" },
+{ nama: "Keisha Putri Sabhira", nis: "232401019" },
+{ nama: "Kha Iza Nazira Putri", nis: "232401020" },
+{ nama: "Khaniza Nafiza Putri", nis: "232401021" },
+{ nama: "Khansa Alifa Agung", nis: "232401022" },
+{ nama: "Kharisma Putri", nis: "232401023" },
+{ nama: "M Zulfan Azhar", nis: "232401024" },
+{ nama: "M Ryan Ardiansyah", nis: "232401026" },
+{ nama: "Mario Apriansyah Sumarna", nis: "232401028" },
+{ nama: "Muhamad Al Fahrizi", nis: "232401029" },
+{ nama: "Muhamad Alfiano", nis: "232401030" },
+{ nama: "Muhamad Anjas Putra", nis: "232401031" },
+{ nama: "Muhamad Pajar Ramadhan", nis: "232401033" },
+{ nama: "Muhammad Fahri", nis: "232401034" },
+{ nama: "Muhammad Gibran", nis: "232401035" },
+{ nama: "Muhammad Rifaldi", nis: "232401036" },
+{ nama: "Muhammad Rifki Al-Hakim", nis: "232401037" },
+{ nama: "Natasya Adreni Meisy", nis: "232401039" },
+{ nama: "Nisa Hayatul Nahda", nis: "232401040" },
+{ nama: "Nur Aulia", nis: "232401041" },
+{ nama: "Raisyha Az-Zahra", nis: "232401042" },
+{ nama: "Riza Amsory", nis: "232401043" },
+{ nama: "Sapnatun Najwa", nis: "232401044" },
+{ nama: "Sufhian Sarif", nis: "232401045" },
+{ nama: "Tri Guntara", nis: "232401046" },
+{ nama: "Yusria Humaira", nis: "232401047" },
+];
+
+    function toggleAlasanSelect(event, index) {
+      const alasanSelect = document.querySelector(`.alasan-select[data-nis="${siswaData[index].nis}"]`);
+      if (event.target.value === 'Tidak Hadir') {
+        alasanSelect.style.display = 'inline-block';
+      } else {
+        alasanSelect.style.display = 'none';
+      }
+    }
+
+    function loadPelajaran() {
+        const pelajaranSelect = document.getElementById('pelajaran');
+        
+        // Kosongkan opsi yang ada di select
+        pelajaranSelect.innerHTML = '<option value="">Pilih Mata Pelajaran</option>';
+        
+        // Masukkan mata pelajaran ke dalam select
+        pelajaranList.forEach(pelajaran => {
+          const option = document.createElement('option');
+          option.value = pelajaran;
+          option.textContent = pelajaran;
+          pelajaranSelect.appendChild(option);
+        });
+      }
+      
+      function loadAbsensi() {
+        loadPelajaran(); // Muat daftar mata pelajaran ke dalam select
+        
+        const absensiList = JSON.parse(localStorage.getItem('absensi')) || [];
+        const today = new Date().toISOString().split('T')[0];
+        const absensiToday = absensiList.find(absen => absen.tanggal === today);
+        
+        if (absensiToday) {
+          document.getElementById('tanggal').value = absensiToday.tanggal;
+          document.getElementById('pelajaran').value = absensiToday.pelajaran;
+      
+          const tableBody = document.querySelector('#siswaTable tbody');
+          tableBody.innerHTML = ''; // Clear existing rows
+      
+          siswaData.forEach((siswa, index) => {
+            const status = absensiToday.absensi.find(item => item.nis === siswa.nis);
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${index + 1}</td>
+              <td>${siswa.nama}</td>
+              <td>${siswa.nis}</td>
+              <td>
+                <input type="radio" name="absen-${index}" value="Hadir" ${status && status.status === 'Hadir' ? 'checked' : ''} onchange="toggleAlasanSelect(event, ${index})"> Hadir
+              </td>
+              <td>
+                <input type="radio" name="absen-${index}" value="Tidak Hadir" ${status && status.status === 'Tidak Hadir' ? 'checked' : ''} onchange="toggleAlasanSelect(event, ${index})"> Tidak Hadir
+              </td>
+              <td>
+                <select class="alasan-select" data-nis="${siswa.nis}" style="${status && status.status === 'Tidak Hadir' ? 'display: inline-block;' : 'display: none;'}">
+                  <option value="">Pilih Alasan</option>
+                  <option value="Sakit" ${status && status.alasan === 'Sakit' ? 'selected' : ''}>Sakit</option>
+                  <option value="Izin" ${status && status.alasan === 'Izin' ? 'selected' : ''}>Izin</option>
+                  <option value="Alfa" ${status && status.alasan === 'Alfa' ? 'selected' : ''}>Alfa</option>
+                </select>
+              </td>
+            `;
+            tableBody.appendChild(tr);
+          });
+        }
+      }
+      
+      window.onload = function() {
+        loadAbsensi(); // Muat absensi jika ada
+      };
+      
+
+    function simpanAbsensi() {
+        const tanggal = document.getElementById('tanggal').value;
+        const pelajaran = document.getElementById('pelajaran').value;
+      
+        if (!tanggal || !pelajaran) {
+          alert("Tanggal dan pelajaran wajib diisi!");
+          return;
+        }
+      
+        // Validasi apakah semua siswa sudah diisi absensinya
+        let semuaTerisi = true;
+        const absensi = siswaData.map((siswa, index) => {
+          const status = document.querySelector(`input[name="absen-${index}"]:checked`);
+          let alasan = "";
+          if (!status) {
+            semuaTerisi = false;
+          } else if (status.value === "Tidak Hadir") {
+            alasan = document.querySelector(`.alasan-select[data-nis="${siswa.nis}"]`).value;
+            if (!alasan) {
+              alert(`Alasan untuk siswa ${siswa.nama} belum diisi!`);
+              semuaTerisi = false;
+            }
+          }
+          return {
+            nama: siswa.nama,
+            nis: siswa.nis,
+            status: status ? status.value : "Belum Diisi",
+            alasan: alasan
+          };
+        });
+      
+        if (!semuaTerisi) {
+          const konfirmasi = confirm("Masih ada siswa yang belum diisi absensinya. Yakin ingin melanjutkan?");
+          if (!konfirmasi) {
+            return;
+          }
+        }
+      
+        const dataAbsen = {
+          tanggal,
+          pelajaran,
+          absensi
+        };
+      
+        // Ambil data absensi yang ada di localStorage
+        let absensiList = JSON.parse(localStorage.getItem('absensi')) || [];
+        
+        // Cek apakah data absen hari ini sudah ada di localStorage
+        const indexDataAbsen = absensiList.findIndex(item => item.tanggal === tanggal);
+        if (indexDataAbsen !== -1) {
+          // Jika data untuk tanggal ini sudah ada, perbarui
+          absensiList[indexDataAbsen] = dataAbsen;
+        } else {
+          // Jika belum ada, tambahkan data baru
+          absensiList.push(dataAbsen);
+        }
+        
+        // Simpan data absensi yang telah diperbarui ke localStorage
+        localStorage.setItem('absensi', JSON.stringify(absensiList));
+      
+        alert('Absensi berhasil disimpan!');
+        document.getElementById('absenForm').reset();
+        resetSemua();
+      }
+      
+  </script>
+
+</body>
+</html>

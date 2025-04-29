@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Rekap Absensi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fa;
+      padding: 20px;
+      font-size: 18px; /* Ukuran font lebih besar */
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 1200px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      font-size: 24px; /* Ukuran font judul lebih besar */
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 20px; /* Ukuran font pada tabel lebih besar */
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 15px;
+      text-align: center;
+      font-size: 20px; /* Ukuran font di dalam tabel lebih besar */
+    }
+    th {
+      background: #4285f4;
+      color: white;
+      font-weight: bold;
+    }
+    td {
+      background-color: #f9f9f9;
+    }
+    button {
+      padding: 15px 25px;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      font-size: 20px; /* Ukuran font tombol lebih besar */
+      margin-top: 20px;
+    }
+    .btn-primary {
+      background-color: #4285f4;
+    }
+    .btn-primary:hover {
+      background-color: #3367d6;
+    }
+    .btn-danger {
+      background-color: #e74c3c;
+    }
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
+    .button-group {
+      margin-top: 40px;
+      text-align: right;
+    }
+    .button-group button {
+      margin-left: 15px;
+    }
+    .alasan-select {
+      text-align: center; /* Menjaga alasan agar berada di tengah */
+    }
+  </style>
+
+  <!-- Include jsPDF and autoTable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Rekap Absensi</h2>
+
+    <table id="rekapTable">
+      <thead>
+        <tr>
+          <th>Pilih</th>
+          <th>Tanggal</th>
+          <th>Pelajaran</th>
+          <th>Jumlah Hadir / Tidak Hadir</th>
+          <th>Alasan</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="rekapBody"></tbody>
+    </table>
+
+    <!-- Button Group -->
+    <div class="button-group">
+      <button class="btn-primary" onclick="downloadPDF()">Download Absensi yang Dipilih</button>
+      <button class="btn-danger" onclick="kembali()">← Kembali ke Dashboard</button>
+    </div>
+  </div>
+
+  <script>
+    let absensiList = JSON.parse(localStorage.getItem("absensi")) || [];
+    let userProfile = JSON.parse(localStorage.getItem("userProfile")) || {
+      nama: 'Nama Siswa',
+      kelas: '1',
+      sekolah: 'SDN CIBARUSAH JAYA 02',
+      guru: 'SRI RAHAYU'
+    };
+
+    function getNamaBulan(bulan) {
+      const namaBulan = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+      ];
+      return namaBulan[parseInt(bulan) - 1];
+    }    
+
+    function loadRekap() {
+      const groupedByMonth = {};
+    
+      absensiList.forEach(absen => {
+        const [tahun, bulan, tanggal] = absen.tanggal.split('-'); // Misal: '2025-04-28'
+        const bulanKey = `${tahun}-${bulan}`; // contoh: '2025-04'
+    
+        if (!groupedByMonth[bulanKey]) groupedByMonth[bulanKey] = [];
+        groupedByMonth[bulanKey].push(absen);
+      });
+    
+      const tbody = document.getElementById("rekapBody");
+      tbody.innerHTML = "";
+    
+      const sortedMonths = Object.keys(groupedByMonth).sort();
+    
+      sortedMonths.forEach(monthKey => {
+        const [tahun, bulan] = monthKey.split('-');
+        const namaBulan = getNamaBulan(bulan);
+    
+        // Tambahkan header bulan
+        const bulanRow = document.createElement('tr');
+        bulanRow.innerHTML = ` 
+          <td colspan="6" style="background:#d9edf7; font-weight:bold; text-align:left;">${namaBulan} ${tahun}</td>
+        `;
+        tbody.appendChild(bulanRow);
+    
+        // Data per bulan
+        const dataBulan = groupedByMonth[monthKey];
+        const groupedData = {};
+    
+        dataBulan.forEach(absen => {
+          const key = absen.tanggal + "|" + absen.pelajaran;
+          if (!groupedData[key]) groupedData[key] = { hadir: 0, tidakHadir: 0 };
+          absen.absensi.forEach(siswa => {
+            if (siswa.status === "Hadir") groupedData[key].hadir++;
+            else if (siswa.status === "Tidak Hadir") groupedData[key].tidakHadir++;
+          });
+        });
+    
+        for (const key in groupedData) {
+          const [tanggal, pelajaran] = key.split("|");
+          const { hadir, tidakHadir } = groupedData[key];
+    
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td><input type="checkbox" class="select-checkbox" data-tanggal="${tanggal}" data-pelajaran="${pelajaran}"></td>
+            <td>${tanggal}</td>
+            <td>${pelajaran}</td>
+            <td>Hadir: ${hadir}, Tidak: ${tidakHadir}</td>
+            <td>
+              <button class="btn-danger" onclick="hapusDataTerpilih('${tanggal}', '${pelajaran}')">Hapus</button>
+              <button class="btn-primary" onclick="ubahData('${tanggal}', '${pelajaran}')">Ubah</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        }
+      });
+    }
+    
+    function ubahData(tanggal, pelajaran) {
+      const absenData = absensiList.find(a => a.tanggal === tanggal && a.pelajaran === pelajaran);
+    
+      if (!absenData) {
+        alert("Data tidak ditemukan.");
+        return;
+      }
+    
+      // Simpan data ke localStorage sementara
+      localStorage.setItem("dataUbahAbsensi", JSON.stringify(absenData));
+    
+      // Pindah ke halaman ubah_absen.html
+      window.location.href = "ubah_absen.html";
+    }
+    
+
+    function hapusDataTerpilih(tanggal, pelajaran) {
+      const konfirmasi = confirm(`Yakin ingin menghapus absensi untuk "${pelajaran}" pada tanggal ${tanggal}?`);
+      if (konfirmasi) {
+        absensiList = absensiList.filter(a => !(a.tanggal === tanggal && a.pelajaran === pelajaran));
+        localStorage.setItem("absensi", JSON.stringify(absensiList));
+        loadRekap();
+      }
+    }
+
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+    
+      const selectedRows = document.querySelectorAll('.select-checkbox:checked');
+      if (selectedRows.length === 0) {
+        alert('Pilih data absensi yang ingin diunduh.');
+        return;
+      }
+    
+      let dataExport = [];
+      let no = 1;
+    
+      selectedRows.forEach(row => {
+        const tanggal = row.getAttribute('data-tanggal');
+        const pelajaran = row.getAttribute('data-pelajaran');
+    
+        const filteredData = absensiList.filter(a => a.tanggal === tanggal && a.pelajaran === pelajaran);
+    
+        filteredData.forEach(absen => {
+          absen.absensi.forEach(siswa => {
+            const alasan = siswa.status === "Tidak Hadir" ? siswa.alasan : '';
+            dataExport.push([no++, absen.tanggal, siswa.nama, siswa.nis, absen.pelajaran, siswa.status === "Hadir" ? "Hadir" : "", alasan]);
+          });
+        });        
+      });
+    
+      const name = localStorage.getItem("profileName") || "Nama Guru";
+      const classInfo = localStorage.getItem("profileClass") || "Kelas: 1";
+    
+      doc.setFontSize(16);
+      const pageWidth = doc.internal.pageSize.width;
+      const textWidth = doc.getTextWidth("Rekap Absensi");
+      const xPosition = (pageWidth - textWidth) / 2;
+    
+      doc.text("Rekap Absensi", xPosition, 15);
+      doc.setFontSize(12);
+      doc.text("Nama Guru: " + name, 10, 45);
+      doc.text("Kelas: " + classInfo, 10, 35);
+      doc.text("Sekolah: SDN CIBARUSAH JAYA 02", 10, 55);
+    
+      if (dataExport.length > 0) {
+        doc.autoTable({
+          head: [['No', 'Tanggal', 'Nama', 'NIS', 'Mata Pelajaran', 'Hadir', 'Tidak Hadir']],
+          body: dataExport,
+          startY: 65,
+          theme: 'grid',
+          columnStyles: {
+            5: { halign: 'center' },
+          }
+        });
+    
+        doc.save('rekap_absensi_terpilih.pdf');
+      } else {
+        alert("Tidak ada data yang dipilih untuk diunduh.");
+      }
+    }     
+
+    function kembali() {
+      window.location.href = 'dashboard.html';
+    }
+
+    window.onload = loadRekap;
+  </script>
+</body>
+</html>
