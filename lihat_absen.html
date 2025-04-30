@@ -180,12 +180,18 @@
             <td>${pelajaran}</td>
             <td>Hadir: ${hadir}, Tidak: ${tidakHadir}</td>
             <td>
-              <button class="btn-danger" onclick="hapusDataTerpilih('${tanggal}', '${pelajaran}')">Hapus</button>
+              <button class="btn-danger" onclick="hapusDataTerpilih('${tanggal}', '${pelajaran}')">Hapus</button><br><br>
+              <button class="btn-primary" onclick="ubahAbsensi('${tanggal}', '${pelajaran}')">Ubah</button>
             </td>
           `;
           tbody.appendChild(row);
         }
       });
+    }
+
+    // Fungsi untuk mengarahkan ke halaman ubah_absen.html dengan parameter
+    function ubahAbsensi(tanggal, pelajaran) {
+      window.location.href = `ubah_absen.html?tanggal=${tanggal}&pelajaran=${pelajaran}`;
     }
 
     function generateTombolRekapBulanan() {
@@ -200,7 +206,7 @@
       });
 
       Object.keys(bulanTersedia).sort().forEach(key => {
-        const [tahun, bulan] = key.split("-");
+        const [tahun, bulan] = key.split("-"); 
         const btn = document.createElement("button");
         btn.className = "btn-primary";
         btn.textContent = `Lihat Rekap ${getNamaBulan(bulan)} ${tahun}`;
@@ -273,74 +279,36 @@
       const doc = new jsPDF();
       const selectedRows = document.querySelectorAll('.select-checkbox:checked');
       if (!selectedRows.length) return alert('Pilih data absensi yang ingin diunduh.');
-    
+
       let startY = 20;
-    
+
       // Menambahkan judul utama
       doc.setFontSize(16);
-      doc.text("Rekap Absensi", 10, startY);
+      doc.text("Rekap Absensi yang Dipilih", 10, startY);
       startY += 10;
-    
-      // Ambil data guru dan kelas dari localStorage
-      const profileData = JSON.parse(localStorage.getItem('profile')) || {};
-      const teacherName = profileData.name || 'Nama Guru';
-      const className = profileData.class || 'Kelas 1';
-    
-      // Menambahkan informasi guru dan kelas setelah judul
-      doc.setFontSize(12);
-      doc.text(`Nama Guru: ${teacherName}`, 10, startY);
-      startY += 6;
-      doc.text(`Kelas: ${className}`, 10, startY);
-      startY += 10;  // Memberikan sedikit ruang sebelum tabel absensi
-    
-      const dataExport = [];
-      selectedRows.forEach((row, index) => {
-        const tanggal = row.getAttribute('data-tanggal');
-        const pelajaran = row.getAttribute('data-pelajaran');
-        const filteredData = absensiList.filter(a => a.tanggal === tanggal && a.pelajaran === pelajaran);
-    
-        let no = 1;
-        let totalHadir = 0;
-        let totalTidakHadir = 0;
-    
-        filteredData.forEach(absen => {
-          absen.absensi.forEach(siswa => {
-            const alasan = siswa.status === "Tidak Hadir" ? siswa.alasan : '';
-            const hadirText = siswa.status === "Hadir" ? "V" : "X";
-            if (siswa.status === "Hadir") totalHadir++;
-            else totalTidakHadir++;
-            dataExport.push([no++, absen.tanggal, siswa.nama, siswa.nis, absen.pelajaran, hadirText, alasan]);
-          });
-        });
-    
-        // Menambahkan data absensi pada bagian PDF
-        doc.autoTable({
-          head: [['No', 'Tanggal', 'Nama', 'NIS', 'Mata Pelajaran', 'Hadir', 'Alasan Tidak Hadir']],
-          body: dataExport,
-          startY: startY,
-          theme: 'grid',
-          styles: { fontSize: 10 },
-          didDrawPage: function (data) {
-            startY = data.cursor.y + 10;
-            doc.setFontSize(12);
-            startY += 16;
-          }
-        });
+
+      selectedRows.forEach(row => {
+        const tanggal = row.getAttribute("data-tanggal");
+        const pelajaran = row.getAttribute("data-pelajaran");
+
+        const rowText = `Tanggal: ${tanggal}, Pelajaran: ${pelajaran}`;
+        doc.text(rowText, 10, startY);
+        startY += 10;
       });
-    
-      // Menyimpan PDF dengan nama yang sesuai
-      doc.save('rekap_absensi_terpilih.pdf');
-    }
-    
-    function kembali() {
-      window.location.href = 'dashboard.html';
+
+      doc.save("Rekap_Absensi_Pilihan.pdf");
     }
 
-    window.onload = () => {
-      loadTeacherInfo();  // Menambahkan informasi Guru dan Kelas
-      loadRekap();        // Menampilkan tabel absensi
-      generateTombolRekapBulanan(); // Menambahkan tombol untuk rekap bulanan
+    function kembali() {
+      window.location.href = "dashboard.html";
+    }
+
+    window.onload = function() {
+      loadTeacherInfo();
+      loadRekap();
+      generateTombolRekapBulanan();
     };
+
   </script>
 </body>
 </html>
