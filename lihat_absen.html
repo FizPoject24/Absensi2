@@ -127,7 +127,6 @@
         teacherInfo.textContent = 'Nama Guru dan Kelas belum diset.';
       }
     }
-
     let absensiList = JSON.parse(localStorage.getItem("absensi")) || [];
 
     function getNamaBulan(bulan) {
@@ -189,7 +188,6 @@
       });
     }
 
-    // Fungsi untuk mengarahkan ke halaman ubah_absen.html dengan parameter
     function ubahAbsensi(tanggal, pelajaran) {
       window.location.href = `ubah_absen.html?tanggal=${tanggal}&pelajaran=${pelajaran}`;
     }
@@ -337,17 +335,16 @@
       // Menyimpan PDF dengan nama yang sesuai
       doc.save('rekap_absensi_terpilih.pdf');
     }
-
+    
     function kembali() {
-      window.location.href = "dashboard.html";
+      window.location.href = 'dashboard.html';
     }
 
-    window.onload = function() {
-      loadTeacherInfo();
-      loadRekap();
-      generateTombolRekapBulanan();
+    window.onload = () => {
+      loadTeacherInfo();  // Menambahkan informasi Guru dan Kelas
+      loadRekap();        // Menampilkan tabel absensi
+      generateTombolRekapBulanan(); // Menambahkan tombol untuk rekap bulanan
     };
-
   </script>
 </body>
 </html>
