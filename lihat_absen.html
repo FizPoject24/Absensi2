@@ -265,6 +265,15 @@
       doc.save(`Rekap_${bulanKey}.pdf`);
     }
 
+    function hapusDataTerpilih(tanggal, pelajaran) {
+      if (confirm(`Yakin ingin menghapus absensi untuk \"${pelajaran}\" pada tanggal ${tanggal}?`)) {
+        absensiList = absensiList.filter(a => !(a.tanggal === tanggal && a.pelajaran === pelajaran));
+        localStorage.setItem("absensi", JSON.stringify(absensiList));
+        loadRekap();
+        generateTombolRekapBulanan();
+      }
+    }
+
     function downloadPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
@@ -327,40 +336,6 @@
     
       // Menyimpan PDF dengan nama yang sesuai
       doc.save('rekap_absensi_terpilih.pdf');
-    }
-
-    function hapusDataTerpilih(tanggal, pelajaran) {
-      if (confirm(`Yakin ingin menghapus absensi untuk \"${pelajaran}\" pada tanggal ${tanggal}?`)) {
-        absensiList = absensiList.filter(a => !(a.tanggal === tanggal && a.pelajaran === pelajaran));
-        localStorage.setItem("absensi", JSON.stringify(absensiList));
-        loadRekap();
-        generateTombolRekapBulanan();
-      }
-    }
-
-    function downloadPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const selectedRows = document.querySelectorAll('.select-checkbox:checked');
-      if (!selectedRows.length) return alert('Pilih data absensi yang ingin diunduh.');
-
-      let startY = 20;
-
-      // Menambahkan judul utama
-      doc.setFontSize(16);
-      doc.text("Rekap Absensi yang Dipilih", 10, startY);
-      startY += 10;
-
-      selectedRows.forEach(row => {
-        const tanggal = row.getAttribute("data-tanggal");
-        const pelajaran = row.getAttribute("data-pelajaran");
-
-        const rowText = `Tanggal: ${tanggal}, Pelajaran: ${pelajaran}`;
-        doc.text(rowText, 10, startY);
-        startY += 10;
-      });
-
-      doc.save("Rekap_Absensi_Pilihan.pdf");
     }
 
     function kembali() {
